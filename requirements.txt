@@ -1,3 +1,4 @@
 bowtie
 plotlywrapper
 gunicorn
+enum34
