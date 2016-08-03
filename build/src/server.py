@@ -6,8 +6,10 @@ import sys
 from flask import Flask, render_template, copy_current_request_context
 from flask_socketio import SocketIO, emit
 import eventlet
+import os
 
-sys.path.insert(0, '/Users/jacques/dev/bowtie-demo')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import example
 
