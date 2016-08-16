@@ -7,6 +7,12 @@ conda install --file conda-requirements.txt
 pip install -r requirements.txt
 ```
 
+You also need Install [node](https://nodejs.org/en/) and install `webpack` globally.
+
+```
+npm install -g webpack
+```
+
 Then run the python script.
 
 ```
