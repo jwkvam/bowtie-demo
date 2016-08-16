@@ -5,72 +5,144 @@ from bowtie.control import Nouislider, DropDown, Button
 from bowtie.visual import Plotly, Table, SmartGrid
 
 import numpy as np
-import numpy.random as rng
 import json
+import pandas as pd
 import plotlywrapper as pw
 
-slide = Nouislider()
-slide2 = Nouislider()
-butt = Button(label='Clicker')
-ddown = DropDown(name='hello', options=list(range(5)))
+from sklearn.linear_model import Ridge
+from sklearn.kernel_ridge import KernelRidge
 
-plot = Plotly()
-plot2 = Plotly()
-plot3 = Plotly()
+iris = pd.read_csv('./iris.csv')
+iris = iris.drop(iris.columns[0], axis=1)
+
+attrs = iris.columns[:-1]
+
+xdown = DropDown(caption='X variable', options=[dict(value=x, label=x) for x in attrs])
+ydown = DropDown(caption='Y variable', options=[dict(value=x, label=x) for x in attrs])
+zdown = DropDown(caption='Z variable', options=[dict(value=x, label=x) for x in attrs])
+alphaslider = Nouislider(caption='alpha parameter', start=1, minimum=0.1, maximum=50)
+
+mainplot = Plotly()
+mplot3 = Plotly()
+linear = Plotly()
 table1 = SmartGrid()
 
-def newtable():
-    print('hello')
-    X = rng.randn(100, 2)
-    data = []
-    for x in X:
-        data.append(dict(ab=x[0], ba=x[1]))
-    table1.do_update(data)
 
-def foo(x):
-    t = np.linspace(0, 1, 10);
-    # x = slide2.value
-    y = slide2.get()
-    print(y)
-
-    figure = pw.line(t, float(y) * np.sin(float(x[0]) * t))
-    figure.layout['autosize'] = True
-    # figure.layout['height'] = 700
-    plot.do_all(figure.to_json())
-    print('finish foo')
-
-def foo2(y):
-    t = np.linspace(0, 1, 10);
-    # x = slide2.value
-    x = slide.get()
-    plot2.do_all(pw.line(t, y['y'] * np.sin(float(x) * t)).to_json())
+def mainviewx(x):
+    x = x['value']
+    y = ydown.get()
+    z = zdown.get()
+    if y is not None:
+        y = y['value']
+        mainview(x, y)
+        if z is not None:
+            z = z['value']
+            mainview3(x, y, z)
 
 
-def foo3(dd):
-    t = np.linspace(0, 1, 10);
-    # x = slide2.value
-    dd = ddown.get()
-    # print('ddown value: {}'.format(dd))
-    # x = slide.get()
-    plot3.do_all(pw.line(t, t * dd['value']).to_json())
+def mainviewy(y):
+    y = y['value']
+    x = xdown.get()
+    z = zdown.get()
+    if x is not None:
+        x = x['value']
+        mainview(x, y)
+        if z is not None:
+            z = z['value']
+            mainview3(x, y, z)
+
+
+def mainviewz(z):
+    z = z['value']
+    y = ydown.get()
+    x = xdown.get()
+    if x is not None and y is not None:
+        x = x['value']
+        y = y['value']
+        mainview3(x, y, z)
+
+
+def mainview(x, y):
+    plot = pw.Chart()
+    for i, df in iris.groupby('Species'):
+        plot += pw.scatter(df[x], df[y], label=i)
+    plot.xlabel(x)
+    plot.ylabel(y)
+    mainplot.do_all(plot.to_json())
+
+
+def mainview3(x, y, z):
+    plot = pw.Chart()
+    for i, df in iris.groupby('Species'):
+        plot += pw.scatter3d(df[x], df[y], df[z], label=i)
+    plot.xlabel(x)
+    plot.ylabel(y)
+    plot.zlabel(z)
+    mplot3.do_all(plot.to_json())
+
+
+def regress(selection):
+    alpha = float(alphaslider.get())
+    mainregress(selection, alpha)
+
+
+def regress2(alpha):
+    select = mainplot.get()
+    mainregress(select, float(alpha[0]))
+
+
+def mainregress(selection, alpha):
+    if len(selection) < 2:
+        return
+
+    x = xdown.get()['value']
+    y = ydown.get()['value']
+
+    tabdata = []
+    mldatax = []
+    mldatay = []
+    species = iris.Species.unique()
+    for i, p in enumerate(selection['points']):
+        mldatax.append(p['x'])
+        mldatay.append(p['y'])
+        tabdata.append({x: p['x'],
+                        y: p['y'],
+                        'species': species[p['curveNumber']]
+                        })
+
+
+    X = np.c_[mldatax, np.array(mldatax) ** 2]
+    ridge = KernelRidge(alpha=alpha).fit(X, mldatay)
+
+    xspace = np.linspace(min(mldatax)-1, max(mldatax)+1, 100)
+
+    plot = pw.scatter(mldatax, mldatay, label='train', markersize=15)
+    for i, df in iris.groupby('Species'):
+        plot += pw.scatter(df[x], df[y], label=i)
+    plot += pw.line(xspace, ridge.predict(np.c_[xspace, xspace**2]), label='model', mode='lines')
+    plot.xlabel(x)
+    plot.ylabel(y)
+    linear.do_all(plot.to_json())
+    table1.do_update(tabdata)
 
 
 if __name__ == "__main__":
-
     from bowtie import Layout
     layout = Layout()
-    layout.add_controller(slide)
-    layout.add_controller(slide2)
-    layout.add_controller(ddown)
-    layout.add_controller(butt)
-    layout.add_visual(plot)
-    layout.add_visual(plot2, next_row=True)
-    layout.add_visual(plot3)
+    layout.add_controller(xdown)
+    layout.add_controller(ydown)
+    layout.add_controller(zdown)
+    layout.add_controller(alphaslider)
+    layout.add_visual(mainplot)
+    layout.add_visual(mplot3)
+    layout.add_visual(linear, next_row=True)
     layout.add_visual(table1)
 
-    layout.subscribe(butt.on_click, newtable)
-    layout.subscribe(slide.on_change, foo)
-    layout.subscribe(plot.on_click, foo2)
-    layout.subscribe(ddown.on_change, foo3)
+    layout.subscribe(xdown.on_change, mainviewx)
+    layout.subscribe(ydown.on_change, mainviewy)
+    layout.subscribe(zdown.on_change, mainviewz)
+
+    layout.subscribe(mainplot.on_select, regress)
+    layout.subscribe(alphaslider.on_change, regress2)
 
     layout.build(debug=False)
