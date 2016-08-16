@@ -11,7 +11,7 @@ import eventlet
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-import iris
+import example
 
 app = Flask(__name__)
 app.debug = False
@@ -24,38 +24,38 @@ def index():
 
 @socketio.on('3#change')
 def _(*args):
-    
+
     foo = copy_current_request_context(iris.mainviewz)
     eventlet.spawn(foo, *args)
-    
+
 
 @socketio.on('1#change')
 def _(*args):
-    
+
     foo = copy_current_request_context(iris.mainviewx)
     eventlet.spawn(foo, *args)
-    
+
 
 @socketio.on('4#change')
 def _(*args):
-    
+
     foo = copy_current_request_context(iris.regress2)
     eventlet.spawn(foo, *args)
-    
+
 
 @socketio.on('5#select')
 def _(*args):
-    
+
     foo = copy_current_request_context(iris.regress)
     eventlet.spawn(foo, *args)
-    
+
 
 @socketio.on('2#change')
 def _(*args):
-    
+
     foo = copy_current_request_context(iris.mainviewy)
     eventlet.spawn(foo, *args)
-    
+
 
 
 @click.command()
