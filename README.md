@@ -1,6 +1,13 @@
 # bowtie-demo
 
-To run locally just run
+To run locally, first install the requirements.
+
+```
+conda install --file conda-requirements.txt
+pip install -r requirements.txt
+```
+
+Then run the python script.
 
 ```
 ./example.py
