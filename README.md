@@ -1,5 +1,7 @@
 # bowtie-demo
 
+https://bowtie-demo.herokuapp.com/
+
 To run locally, first install the requirements.
 
 ```
