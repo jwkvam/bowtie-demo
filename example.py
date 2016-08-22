@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from bowtie.control import Nouislider, DropDown, Button
-from bowtie.visual import Plotly, Table, SmartGrid
+from bowtie.visual import Plotly, SmartGrid
 
 import numpy as np
 import json
 import pandas as pd
 import plotlywrapper as pw
 
-from sklearn.linear_model import Ridge
 from sklearn.kernel_ridge import KernelRidge
 
 iris = pd.read_csv('./iris.csv')
