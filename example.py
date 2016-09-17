@@ -128,7 +128,15 @@ def mainregress(selection, alpha):
 
 if __name__ == "__main__":
     from bowtie import Layout
-    layout = Layout(debug=False)
+    description = """
+Bowtie Demo
+===========
+
+Demonstrates interactive elements with the iris dataset.
+Select some attributes to plot and select some data on the 2d plot.
+Change the alpha parameter to see how that affects the model.
+"""
+    layout = Layout(description=description, background_color='PaleTurquoise', debug=False)
     layout.add_controller(xdown)
     layout.add_controller(ydown)
     layout.add_controller(zdown)

@@ -81,10 +81,10 @@ def index():
     return render_template('index.html')
 
 
-@socketio.on('4#change')
+@socketio.on('5#select')
 def _(*args):
     
-    foo = copy_current_request_context(example.regress2)
+    foo = copy_current_request_context(example.regress)
     eventlet.spawn(foo, *args)
     
 
@@ -95,13 +95,6 @@ def _(*args):
     eventlet.spawn(foo, *args)
     
 
-@socketio.on('2#change')
-def _(*args):
-    
-    foo = copy_current_request_context(example.mainviewy)
-    eventlet.spawn(foo, *args)
-    
-
 @socketio.on('3#change')
 def _(*args):
     
@@ -109,10 +102,17 @@ def _(*args):
     eventlet.spawn(foo, *args)
     
 
-@socketio.on('5#select')
+@socketio.on('2#change')
 def _(*args):
     
-    foo = copy_current_request_context(example.regress)
+    foo = copy_current_request_context(example.mainviewy)
+    eventlet.spawn(foo, *args)
+    
+
+@socketio.on('4#change')
+def _(*args):
+    
+    foo = copy_current_request_context(example.regress2)
     eventlet.spawn(foo, *args)
     
 
