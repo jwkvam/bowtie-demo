@@ -81,7 +81,8 @@ def mainview3(x, y, z):
 
 
 def regress(selection):
-    alpha = float(alphaslider.get())
+    val = alphaslider.get()
+    alpha = float(val)
     mainregress(selection, alpha)
 
 
@@ -127,7 +128,7 @@ def mainregress(selection, alpha):
 
 if __name__ == "__main__":
     from bowtie import Layout
-    layout = Layout()
+    layout = Layout(debug=False)
     layout.add_controller(xdown)
     layout.add_controller(ydown)
     layout.add_controller(zdown)
@@ -144,4 +145,4 @@ if __name__ == "__main__":
     layout.subscribe(mainplot.on_select, regress)
     layout.subscribe(alphaslider.on_change, regress2)
 
-    layout.build(debug=False)
+    layout.build()
