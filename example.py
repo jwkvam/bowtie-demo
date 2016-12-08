@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bowtie.control import Nouislider, DropDown, Button
+from bowtie.control import DropDown, Button, Slider
 from bowtie.visual import Plotly, SmartGrid
 
 import numpy as np
@@ -16,10 +16,10 @@ iris = iris.drop(iris.columns[0], axis=1)
 
 attrs = iris.columns[:-1]
 
-xdown = DropDown(caption='X variable', options=[dict(value=x, label=x) for x in attrs])
-ydown = DropDown(caption='Y variable', options=[dict(value=x, label=x) for x in attrs])
-zdown = DropDown(caption='Z variable', options=[dict(value=x, label=x) for x in attrs])
-alphaslider = Nouislider(caption='alpha parameter', start=1, minimum=0.1, maximum=50)
+xdown = DropDown(caption='X variable', labels=attrs, values=attrs)
+ydown = DropDown(caption='Y variable', labels=attrs, values=attrs)
+zdown = DropDown(caption='Z variable', labels=attrs, values=attrs)
+alphaslider = Slider(caption='alpha parameter', start=10, minimum=1, maximum=50)
 
 mainplot = Plotly()
 mplot3 = Plotly()
@@ -28,37 +28,40 @@ table1 = SmartGrid()
 
 
 def mainviewx(x):
-    x = x['value']
-    y = ydown.get()
-    z = zdown.get()
-    if y is not None:
-        y = y['value']
-        mainview(x, y)
-        if z is not None:
-            z = z['value']
-            mainview3(x, y, z)
+    if x:
+        x = x['value']
+        y = ydown.get()
+        z = zdown.get()
+        if y is not None:
+            y = y['value']
+            mainview(x, y)
+            if z is not None:
+                z = z['value']
+                mainview3(x, y, z)
 
 
 def mainviewy(y):
-    y = y['value']
-    x = xdown.get()
-    z = zdown.get()
-    if x is not None:
-        x = x['value']
-        mainview(x, y)
-        if z is not None:
-            z = z['value']
-            mainview3(x, y, z)
+    if y:
+        y = y['value']
+        x = xdown.get()
+        z = zdown.get()
+        if x is not None:
+            x = x['value']
+            mainview(x, y)
+            if z is not None:
+                z = z['value']
+                mainview3(x, y, z)
 
 
 def mainviewz(z):
-    z = z['value']
-    y = ydown.get()
-    x = xdown.get()
-    if x is not None and y is not None:
-        x = x['value']
-        y = y['value']
-        mainview3(x, y, z)
+    if z:
+        z = z['value']
+        y = ydown.get()
+        x = xdown.get()
+        if x is not None and y is not None:
+            x = x['value']
+            y = y['value']
+            mainview3(x, y, z)
 
 
 def mainview(x, y):
@@ -81,14 +84,15 @@ def mainview3(x, y, z):
 
 
 def regress(selection):
-    val = alphaslider.get()
-    alpha = float(val)
-    mainregress(selection, alpha)
+    if selection:
+        alpha = alphaslider.get()
+        mainregress(selection, alpha)
 
 
 def regress2(alpha):
     select = mainplot.get()
-    mainregress(select, float(alpha[0]))
+    if select:
+        mainregress(select, alpha)
 
 
 def mainregress(selection, alpha):
