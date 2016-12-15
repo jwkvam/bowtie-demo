@@ -129,8 +129,10 @@ def mainregress(selection, alpha):
     linear.do_all(plot.to_json())
     table1.do_update(tabdata)
 
+from bowtie import command
 
-if __name__ == "__main__":
+@command
+def construct():
     from bowtie import Layout
     description = """
 Bowtie Demo
@@ -158,3 +160,4 @@ Change the alpha parameter to see how that affects the model.
     layout.subscribe(alphaslider.on_change, regress2)
 
     layout.build()
+
