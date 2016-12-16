@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bowtie.control import DropDown, Button, Slider
+from bowtie.control import DropDown, Slider
 from bowtie.visual import Plotly, SmartGrid
 
 import numpy as np
-import json
 import pandas as pd
 import plotlywrapper as pw
 
@@ -109,10 +108,11 @@ def mainregress(selection, alpha):
     for i, p in enumerate(selection['points']):
         mldatax.append(p['x'])
         mldatay.append(p['y'])
-        tabdata.append({x: p['x'],
-                        y: p['y'],
-                        'species': species[p['curveNumber']]
-                        })
+        tabdata.append({
+            x: p['x'],
+            y: p['y'],
+            'species': species[p['curveNumber']]
+        })
 
 
     X = np.c_[mldatax, np.array(mldatax) ** 2]
@@ -160,4 +160,3 @@ Change the alpha parameter to see how that affects the model.
     layout.subscribe(alphaslider.on_change, regress2)
 
     layout.build()
-
