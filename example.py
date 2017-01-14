@@ -26,44 +26,12 @@ linear = Plotly()
 table1 = SmartGrid()
 
 
-def mainviewx(x):
-    if x:
-        x = x['value']
-        y = ydown.get()
-        z = zdown.get()
-        if y is not None:
-            y = y['value']
-            mainview(x, y)
-            if z is not None:
-                z = z['value']
-                mainview3(x, y, z)
-
-
-def mainviewy(y):
-    if y:
-        y = y['value']
-        x = xdown.get()
-        z = zdown.get()
-        if x is not None:
-            x = x['value']
-            mainview(x, y)
-            if z is not None:
-                z = z['value']
-                mainview3(x, y, z)
-
-
-def mainviewz(z):
-    if z:
-        z = z['value']
-        y = ydown.get()
-        x = xdown.get()
-        if x is not None and y is not None:
-            x = x['value']
-            y = y['value']
-            mainview3(x, y, z)
-
-
-def mainview(x, y):
+def pairplot(x, y):
+    print('hellox')
+    if x is None or y is None:
+        return
+    x = x['value']
+    y = y['value']
     plot = pw.Chart()
     for i, df in iris.groupby('Species'):
         plot += pw.scatter(df[x], df[y], label=i)
@@ -72,7 +40,12 @@ def mainview(x, y):
     mainplot.do_all(plot.to_json())
 
 
-def mainview3(x, y, z):
+def threeplot(x, y, z):
+    if x is None or y is None or z is None:
+        return
+    x = x['value']
+    y = y['value']
+    z = z['value']
     plot = pw.Chart()
     for i, df in iris.groupby('Species'):
         plot += pw.scatter3d(df[x], df[y], df[z], label=i)
@@ -80,18 +53,6 @@ def mainview3(x, y, z):
     plot.ylabel(y)
     plot.zlabel(z)
     mplot3.do_all(plot.to_json())
-
-
-def regress(selection):
-    if selection:
-        alpha = alphaslider.get()
-        mainregress(selection, alpha)
-
-
-def regress2(alpha):
-    select = mainplot.get()
-    if select:
-        mainregress(select, alpha)
 
 
 def mainregress(selection, alpha):
@@ -129,10 +90,11 @@ def mainregress(selection, alpha):
     linear.do_all(plot.to_json())
     table1.do_update(tabdata)
 
+
 from bowtie import command
 
 @command
-def construct():
+def construct(path):
     from bowtie import Layout
     description = """
 Bowtie Demo
@@ -152,11 +114,8 @@ Change the alpha parameter to see how that affects the model.
     layout.add_visual(linear, next_row=True)
     layout.add_visual(table1)
 
-    layout.subscribe(xdown.on_change, mainviewx)
-    layout.subscribe(ydown.on_change, mainviewy)
-    layout.subscribe(zdown.on_change, mainviewz)
-
-    layout.subscribe(mainplot.on_select, regress)
-    layout.subscribe(alphaslider.on_change, regress2)
+    layout.subscribe(pairplot, xdown.on_change, ydown.on_change)
+    layout.subscribe(threeplot, xdown.on_change, ydown.on_change, zdown.on_change)
+    layout.subscribe(mainregress, mainplot.on_select, alphaslider.on_change)
 
     layout.build()
