@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bowtie.control import DropDown, Slider
-from bowtie.visual import Plotly, SmartGrid
+from bowtie import App, command
+from bowtie.control import Dropdown, Slider
+from bowtie.visual import Plotly, Table, Markdown
 
 import numpy as np
 import pandas as pd
@@ -15,15 +16,23 @@ iris = iris.drop(iris.columns[0], axis=1)
 
 attrs = iris.columns[:-1]
 
-xdown = DropDown(caption='X variable', labels=attrs, values=attrs)
-ydown = DropDown(caption='Y variable', labels=attrs, values=attrs)
-zdown = DropDown(caption='Z variable', labels=attrs, values=attrs)
+description = Markdown("""Bowtie Demo
+===========
+
+Demonstrates interactive elements with the iris dataset.
+Select some attributes to plot and select some data on the 2d plot.
+Change the alpha parameter to see how that affects the model.
+""")
+
+xdown = Dropdown(caption='X variable', labels=attrs, values=attrs)
+ydown = Dropdown(caption='Y variable', labels=attrs, values=attrs)
+zdown = Dropdown(caption='Z variable', labels=attrs, values=attrs)
 alphaslider = Slider(caption='alpha parameter', start=10, minimum=1, maximum=50)
 
 mainplot = Plotly()
 mplot3 = Plotly()
 linear = Plotly()
-table1 = SmartGrid()
+table1 = Table()
 
 
 def pairplot(x, y):
@@ -72,7 +81,7 @@ def mainregress(selection, alpha):
         tabdata.append({
             x: p['x'],
             y: p['y'],
-            'species': species[p['curveNumber']]
+            'species': species[p['curve']]
         })
 
 
@@ -88,34 +97,24 @@ def mainregress(selection, alpha):
     plot.xlabel(x)
     plot.ylabel(y)
     linear.do_all(plot.to_json())
-    table1.do_update(tabdata)
+    table1.do_data(pd.DataFrame(tabdata))
 
-
-from bowtie import command
 
 @command
-def construct(path):
-    from bowtie import Layout
-    description = """
-Bowtie Demo
-===========
+def main():
+    app = App(rows=2, columns=2, background_color='PaleTurquoise', debug=False)
+    app.add_sidebar(description)
+    app.add_sidebar(xdown)
+    app.add_sidebar(ydown)
+    app.add_sidebar(zdown)
+    app.add_sidebar(alphaslider)
+    app.add(mainplot)
+    app.add(mplot3)
+    app.add(linear)
+    app.add(table1)
 
-Demonstrates interactive elements with the iris dataset.
-Select some attributes to plot and select some data on the 2d plot.
-Change the alpha parameter to see how that affects the model.
-"""
-    layout = Layout(description=description, background_color='PaleTurquoise', debug=False)
-    layout.add_controller(xdown)
-    layout.add_controller(ydown)
-    layout.add_controller(zdown)
-    layout.add_controller(alphaslider)
-    layout.add_visual(mainplot)
-    layout.add_visual(mplot3)
-    layout.add_visual(linear, next_row=True)
-    layout.add_visual(table1)
+    app.subscribe(pairplot, xdown.on_change, ydown.on_change)
+    app.subscribe(threeplot, xdown.on_change, ydown.on_change, zdown.on_change)
+    app.subscribe(mainregress, mainplot.on_select, alphaslider.on_change)
 
-    layout.subscribe(pairplot, xdown.on_change, ydown.on_change)
-    layout.subscribe(threeplot, xdown.on_change, ydown.on_change, zdown.on_change)
-    layout.subscribe(mainregress, mainplot.on_select, alphaslider.on_change)
-
-    layout.build()
+    return app
