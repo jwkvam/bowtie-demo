@@ -102,15 +102,20 @@ def mainregress(selection, alpha):
 
 @command
 def main():
-    app = App(rows=2, columns=2, background_color='PaleTurquoise', debug=False)
+    app = App(rows=2, columns=3, background_color='PaleTurquoise', debug=False)
+    app.columns[0].fraction(2)
+    app.columns[1].fraction(1)
+    app.columns[2].fraction(1)
+
     app.add_sidebar(description)
     app.add_sidebar(xdown)
     app.add_sidebar(ydown)
     app.add_sidebar(zdown)
     app.add_sidebar(alphaslider)
+
     app.add(mainplot)
-    app.add(mplot3)
-    app.add(linear)
+    app.add(mplot3, row_start=0, column_start=1, column_end=2)
+    app.add(linear, row_start=1, column_start=0, column_end=1)
     app.add(table1)
 
     app.subscribe(pairplot, xdown.on_change, ydown.on_change)
