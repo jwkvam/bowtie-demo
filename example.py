@@ -113,10 +113,10 @@ def main():
     app.add_sidebar(zdown)
     app.add_sidebar(alphaslider)
 
-    app.add(mainplot)
-    app.add(mplot3, row_start=0, column_start=1, column_end=2)
-    app.add(linear, row_start=1, column_start=0, column_end=1)
-    app.add(table1)
+    app[0, 0] = mainplot
+    app[0, 1:] = mplot3
+    app[1, :2] = linear
+    app[1, 2] = table1
 
     app.subscribe(pairplot, xdown.on_change, ydown.on_change)
     app.subscribe(threeplot, xdown.on_change, ydown.on_change, zdown.on_change)
