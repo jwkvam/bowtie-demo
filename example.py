@@ -3,7 +3,8 @@
 
 from bowtie import App, command
 from bowtie.control import Dropdown, Slider
-from bowtie.visual import Plotly, Table, Markdown
+from bowtie.visual import Plotly, Table
+from bowtie.html import Markdown
 
 import numpy as np
 import pandas as pd
