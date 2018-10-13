@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from bowtie import App, command
 from bowtie.control import Dropdown, Slider
