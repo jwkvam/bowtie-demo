@@ -11,7 +11,7 @@ conda install --file conda-requirements.txt
 pip install -r requirements.txt
 ```
 
-You also need to install [yarn](https://nodejs.org/en/) and yarn:
+You also need to install [yarn](https://yarnpkg.com):
 
 ```
 conda install yarn -c conda-forge
