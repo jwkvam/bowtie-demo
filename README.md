@@ -4,29 +4,29 @@ This is hosted on a free dyno on Heroku, so if it doesn't load immediately the d
 
 https://bowtie-demo.herokuapp.com/
 
-To run locally, first install the requirements.
+To run locally, first install the requirements:
 
 ```
 conda install --file conda-requirements.txt
 pip install -r requirements.txt
 ```
 
-You also need Install [node](https://nodejs.org/en/) and install `webpack` globally.
+You also need to install [yarn](https://nodejs.org/en/) and yarn:
 
 ```
-npm install -g webpack
+conda install yarn -c conda-forge
 ```
 
-Then run the python script.
+Then build the app:
 
 ```
-./example.py
+./example.py build
 ```
 
-Then assuming everything builds correctly, run
+Then assuming everything builds correctly, serve it:
 
 ```
-./build/src/server.py
+./example.py serve
 ```
 
 Then go to <http://localhost:9991> on your local machine.
